@@ -1,15 +1,13 @@
 import ballerina/http;
-import ballerina/io;
 
-service / on new http:Listener(8080) {
-    resource function get .() returns error? {
-        io:println("Received a request in 8080");
+configurable int port = 8080;
+
+service / on new http:Listener(port) {
+    resource function get .() returns json {
+        return {"message": "Request received", "port": port};
     }
-
-    resource function get health() returns http:Response|error {
-        http:Response response = new;
-        response.statusCode = 200;
-        return response;
+    
+    resource function get health() returns json {
+        return {"status": "running", "port": port};
     }
 }
-
