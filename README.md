@@ -1,10 +1,10 @@
 # Hot deployments in Ballerina
 
-Hot deployment enables zero-downtime updates by running multiple Ballerina instances behind an NGINX load balancer. This approach allows you to update applications without service interruption by maintaining at least one healthy instance at all times.
+Hot deployments refer to the process of updating or redeploying software components without stopping or restarting the running application which is commonly used to minimize downtime and maintain high availability in production systems.
 
 ## Overview
 
-Here the hot deployment strategy works by orchestrating multiple service instances through a load balancer, allowing you to update and restart services without interrupting user traffic. The load balancer automatically routes requests away from instances undergoing updates and back to them once they are healthy again.
+Here the hot deployment strategy works by orchestrating multiple service instances through a NGINX load balancer, allowing you to update and restart services without interrupting user traffic. The load balancer automatically routes requests away from instances undergoing updates and back to them once they are healthy again.
 
 ## Deployment strategies
 
@@ -18,7 +18,7 @@ This passive approach relies on actual client requests to detect server failures
 
 Failed requests are automatically retried on other available instances, as a fault tolerance mechanism.
 
-![Active Active Configuration](resources/active-active-lb.png)
+![Active Active Configuration](https://raw.githubusercontent.com/Nuvindu/hot-deployment/refs/heads/main/resources/active-active-lb.png)
 
 **NGINX configuration**:
 
@@ -44,11 +44,12 @@ http {
 
 This configuration requires NGINX Plus, which supports active health checks. NGINX proactively polls a specified health endpoint (e.g., /health) on each instance to determine availability.
 
-![Active Active Configuration with Health Check](resources/active-active-health-lb.png)
+
+![Active Active Configuration with Health Check](https://raw.githubusercontent.com/Nuvindu/hot-deployment/refs/heads/main/resources/active-active-health-lb.png)
 
 Unlike passive health checks that only detect failures when client requests fail, active health checks continuously monitor server health in the background, providing faster failure detection and more reliable service availability. This proactive approach allows NGINX to remove unhealthy servers from the pool before they impact user requests, significantly reducing the mean time to detection and improving overall system reliability.
 
-![Active Active Configuration with Health Check](resources/active-active-health-lb-1.png)
+![Active Active Configuration with Health Check](https://raw.githubusercontent.com/Nuvindu/hot-deployment/refs/heads/main/resources/active-active-health-lb-1.png)
 
 **NGINX configuration**:
 
@@ -75,7 +76,7 @@ http {
 
 Primary server handles all traffic, backup only activates on failure. The backup server remains idle until the primary fails, ensuring you always have a failover target.
 
-![Active Passive Configuration](resources/active-passive-lb.png)
+![Active Passive Configuration](https://raw.githubusercontent.com/Nuvindu/hot-deployment/refs/heads/main/resources/active-passive-lb.png)
 
 When the primary server fails to send a response, the load balancer immediately redirects the request to backup server. This failover process is automatic and transparent to the client, occurring within milliseconds of detecting the failure. The backup server must be pre-configured with identical application code and dependencies.
 
@@ -127,7 +128,7 @@ After configuring one of the failover setups (Active-Active or Active-Passive), 
 First, stop one of the running servers you need to update. If NGINX is configured with health checks, it will automatically detect that the instance is unavailable and stop routing traffic to it. Otherwise, NGINX will attempt to retry the request and redirect it to another available server if the original one fails.
 You can then update or redeploy the stopped service with the necessary changes. Once the update is complete, restart the server. When the service is back online and passes the health check, NGINX will resume routing requests to it. You can then repeat the same process for the remaining servers, applying the new changes one by one without causing any downtime.
 
-Key NGINX parameters and best practices for reliable hot deployments,
+Key points,
 
 - **max_fails=3**: Mark server down after 3 failures
 - **fail_timeout=30s**: Keep server down for 30 seconds
